@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 public class GameScreen implements Screen {
     final dropgame game;
-
+    Texture backgroundImage;
     Texture dropImage;
     Texture bucketImage;
     Sound dropSound;
@@ -35,6 +35,8 @@ public class GameScreen implements Screen {
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture(Gdx.files.internal("drop.png"));
         bucketImage = new Texture(Gdx.files.internal("bucket.png"));
+        backgroundImage = new Texture(Gdx.files.internal("fondo.jpg"));
+
 
         // load the drop sound effect and the rain background "music"
         //dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
@@ -75,6 +77,7 @@ public class GameScreen implements Screen {
         // arguments to clear are the red, green
         // blue and alpha component in the range [0,1]
         // of the color to be used to clear the screen.
+
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
         // tell the camera to update its matrices.
@@ -87,7 +90,10 @@ public class GameScreen implements Screen {
         // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
-        game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 0, 480);
+        game.font.getData().setScale(2);
+        game.font.setColor(0, 0, 0, 1);
+        game.batch.draw(backgroundImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        game.font.draw(game.batch, "SCORE: " + dropsGathered, 5, 480);
         game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
         for (Rectangle raindrop : raindrops) {
             game.batch.draw(dropImage, raindrop.x, raindrop.y);
@@ -125,7 +131,11 @@ public class GameScreen implements Screen {
             raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
             if (raindrop.y + 64 < 0)
                 iter.remove();
-            if (raindrop.overlaps(bucket)) {
+            else if (raindrop.y < 0) { // Si un raindrop pasa del borde izquierdo
+                resume(); // Llama al método para terminar el juego
+                return;
+            }// Termina el método render
+            else if (raindrop.overlaps(bucket)) {
                 dropsGathered++;
                 //dropSound.play();
                 iter.remove();
@@ -154,7 +164,10 @@ public class GameScreen implements Screen {
 
     @Override
     public void resume() {
-    }
+        game.setScreen(new GameOverScreen(game,dropsGathered));
+        dispose();
+        }
+
 
     @Override
     public void dispose() {
@@ -164,3 +177,5 @@ public class GameScreen implements Screen {
         //rainMusic.dispose();
     }
 }
+
+
