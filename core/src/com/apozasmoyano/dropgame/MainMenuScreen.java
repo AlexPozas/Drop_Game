@@ -27,13 +27,14 @@ public class MainMenuScreen implements Screen {
     public void render(float delta) {
 
         ScreenUtils.clear(0, 0, 0.2f, 1);
-
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
-
+        game.font.getData().setScale(2);
+        game.font.setColor(1, 1, 1, 1);
         game.batch.begin();
-        game.font.draw(game.batch, "Welcome to Drop!!! ", 100, 150);
-        game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
+        game.font.draw(game.batch, "Welcome to Drop!!! ", 250, 300);
+        game.font.getData().setScale(1);
+        game.font.draw(game.batch, "Tap anywhere to begin!", 250, 200);
         game.batch.end();
 
         if (Gdx.input.isTouched()) {
